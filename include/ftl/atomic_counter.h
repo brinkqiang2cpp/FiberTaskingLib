@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "ftl/task_counter.h"
+#include "ftl/base_counter.h"
 
 namespace ftl {
 
@@ -32,10 +32,10 @@ namespace ftl {
  * FullAtomicCounter is a wrapper over a C++11 atomic_unsigned
  * It implements TaskCounter and adds additional flexibility
  */
-class FullAtomicCounter : public TaskCounter {
+class FullAtomicCounter : public BaseCounter {
 public:
 	explicit FullAtomicCounter(TaskScheduler *taskScheduler, unsigned const initialValue = 0, size_t const fiberSlots = NUM_WAITING_FIBER_SLOTS)
-	        : TaskCounter(taskScheduler, initialValue, fiberSlots) {
+	        : BaseCounter(taskScheduler, initialValue, fiberSlots) {
 	}
 
 	FullAtomicCounter(FullAtomicCounter const &) = delete;
@@ -134,25 +134,16 @@ public:
 		m_lock.fetch_sub(1U, std::memory_order_seq_cst);
 		return success;
 	}
-
-protected:
-	void Add(unsigned const x) override {
-		FetchAdd(x, std::memory_order_seq_cst);
-	}
-
-	void Decrement() override {
-		FetchSub(1, std::memory_order_seq_cst);
-	}
 };
 
 /**
  * FullAtomicCounter is a wrapper over a C++11 atomic_unsigned
  * It implements TaskCounter and adds additional flexibility
  */
-class AtomicFlag : public TaskCounter {
+class AtomicFlag : public BaseCounter {
 public:
 	explicit AtomicFlag(TaskScheduler *taskScheduler, unsigned const initialValue = 0, size_t const fiberSlots = NUM_WAITING_FIBER_SLOTS)
-	        : TaskCounter(taskScheduler, initialValue, fiberSlots) {
+	        : BaseCounter(taskScheduler, initialValue, fiberSlots) {
 	}
 
 	AtomicFlag(AtomicFlag const &) = delete;
